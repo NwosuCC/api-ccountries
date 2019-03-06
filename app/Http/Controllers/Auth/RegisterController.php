@@ -10,6 +10,12 @@ use Illuminate\Support\Facades\Validator;
 
 class RegisterController extends Controller
 {
+    /**
+     * If true, the User is logged in after successful registration
+     */
+    private static $auto_login = false;
+
+
     public function __construct()
     {
     }
@@ -21,8 +27,10 @@ class RegisterController extends Controller
 
       $user = $this->create($request->all());
 
-//      auth()->guard()->login($user);
-//      $user = auth()->user();
+      if(static::$auto_login) {
+        auth()->guard()->login($user);
+        $user = auth()->user();
+      }
 
       return response()->json($user, 200);
     }
@@ -35,7 +43,7 @@ class RegisterController extends Controller
             'last_name' => ['required', 'string', 'max:255'],
             'date_of_birth' => ['date', 'before:'.User::minBirthDate()],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            'username' => ['required', 'string', 'max:255', 'unique:users'],
+            'username' => ['required', 'alpha_num', 'max:255', 'unique:users'],
             'password' => ['required', 'string', 'min:6'],
         ]);
     }

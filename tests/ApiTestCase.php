@@ -28,11 +28,24 @@ class ApiTestCase extends TestCase
   protected $model_table = '';
 
 
+  /**
+   * Return an instance of the model specified in the child class
+   */
   protected function model() {
     if(!$this->model && $this->model_name) {
       $this->model = app($this->model_name);
     }
     return $this->model;
+  }
+
+
+  /**
+   * Add the API prefix and return the new URL
+   * @param string $url
+   * @return string
+   */
+  protected function prefix(string $url) {
+    return "/api/v1/" . $url;
   }
 
 
@@ -45,15 +58,17 @@ class ApiTestCase extends TestCase
    * @return mixed
    */
   protected function factory(int $count = 1) {
-    return factory($this->model_name, $count);
+    return factory($this->model_name)->times($count);
   }
 
 
   protected function _assert_DB_has_entries(Collection $entries, array $columns) {
     $entries->each(function ($entry) use ($entries, $columns) {
-        foreach($columns as $column){
-          $this->assertDatabaseHas($this->model_table, $entry[ $column ]);
-        }
+      $entry_properties = array_intersect_key(
+        $entry->toArray(), array_fill_keys($columns, '')
+      );
+
+      $this->assertDatabaseHas($this->model_table, $entry_properties);
     });
   }
 

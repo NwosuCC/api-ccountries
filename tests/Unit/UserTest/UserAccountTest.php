@@ -3,6 +3,8 @@
 namespace Tests\Unit\UserTest;
 
 use App\User;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\ValidationException;
 use Tests\ApiTestCase;
 
 
@@ -13,6 +15,7 @@ class UserAccountTest extends ApiTestCase
 {
 
   protected $model_name = User::class;
+  protected $model_table = 'users';
 
 
   /**
@@ -26,24 +29,16 @@ class UserAccountTest extends ApiTestCase
   }
 
 
-  public function testRegisterUserTest()
+  /*public function testRegisterUserTest()
   {
-    // POST /register : sign-up user
-
-    /*$data = [
-      "first_name" => "Jane",
-      "last_name" => "Minnowe",
-      "date_of_birth" => "1997-12-01 10:13:47",
-      "email" => "jane.minnowe@aol.com",
-      "username" => "JaneMi",
-      "password" => "secret"
-    ];*/
-
-    // Create user
+    // Make user, not persisted
     $count = 1;
-    $new_user = $this->factory($count)->create();
+    $new_user = $this->factory($count)->make(['password' => 'secret'])->first();
 
-    $response = $this->post('/api/v1/register', $new_user);
+    $new_user_post = $new_user->toArray();
+    $new_user_post['password'] = 'secret';
+
+    $response = $this->post( $this->prefix('register'), $new_user_post );
 
     $response->assertStatus(200);
 
@@ -54,20 +49,34 @@ class UserAccountTest extends ApiTestCase
 
     // Check returned json contains posted user information
     $response->assertJson([
-      "email" => $new_user['email'],
-      "username" => $new_user['username']
+      "email" => $new_user->{'email'},
+      "username" => $new_user->{'username'}
     ]);
-  }
+  }*/
 
-  /*public function testLoginUserTest()
+  // POST /login : authenticate user
+
+  /**
+   * @test
+   * POST /login : Authenticate user
+   */
+  public function LoginUserTest()
   {
-    // POST /login : authenticate user
+    // Create user, persisted
+    $count = 1;
+    $password = 'secret';
+
+    $new_user = $this->factory($count)
+                     ->state('raw_pass')
+                     ->create()
+                     ->first();
+
     $credentials = [
-      "email" => "jane.minnowe@aol.com",
-      'password' => 'secret',
+      "email" => $new_user->email,
+      "password" => $password
     ];
 
-    $response = $this->post('/login', $credentials);
+    $response = $this->post($this->prefix('login'), $credentials);
 
     $response->assertStatus(200);
 
@@ -75,10 +84,7 @@ class UserAccountTest extends ApiTestCase
       'id', 'email', 'username', 'token'
     ], $response->json());
 
-    $response->assertJson([
-      "email" => "jane.minnowe@aol.com",
-      "username" => "JaneMi"
-    ]);
-  }*/
+    $response->assertJson($credentials);
+  }
 
 }
