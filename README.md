@@ -43,7 +43,7 @@ The token, as expected, gives each user exclusive MODIFY privileges to the resou
 
 ### Audit Trail
 The Audit Trail monitors user activities on the Country model.
-To view the audits, login with a test Admin account (use an email of the pattern admin@<any-domain>, i.e, 'admin' before the '@')
+To view the audits, login with a test Admin account (use an email of the pattern admin@>anydomain<, i.e, 'admin' before the '@')
 
 
 ### Documentation
