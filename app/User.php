@@ -30,7 +30,7 @@ class User extends Authenticatable
 
 
     public static function tokenName() {
-      return 'Countries User Token';
+      return env('APP_TOKEN_NAME') ?? 'Countries Personal Token';
     }
 
     /*public function getRouteKeyName() {
