@@ -1,0 +1,46 @@
+<?php
+
+namespace App\Http\Requests;
+
+use App\Country;
+use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
+
+class CountryRequest extends FormRequest
+{
+    /**
+     * Determine if the user is authorized to make this request.
+     *
+     * @return bool
+     */
+    public function authorize()
+    {
+        // Implemented in CountryPolicy
+        return true;
+    }
+
+    /**
+     * Get the validation rules that apply to the request.
+     *
+     * @return array
+     */
+    public function rules()
+    {
+        $country = $this->route('country');
+
+        // ToDo: use Middleware -- Done
+        // $this->request->set('continent', Country::to_preferred_case($this->request->get('continent')));
+
+
+        return [
+            'name' => [
+                'required', 'string',
+                Rule::unique('countries')->whereNull('deleted_at')->ignore($country ? $country->id : ''),
+            ],
+            'continent' => [
+                'string',
+                Rule::in( Country::continents() ),
+            ],
+        ];
+    }
+}
