@@ -11,17 +11,9 @@ use Illuminate\Contracts\Auth\Authenticatable as UserContract;
 
 use App\User;
 
-/** @group Post */
 class ExampleTest extends TestCase
 {
     use InteractsWithAuthentication;
-
-
-    private $user;
-
-    private function printValue($value) {
-        echo json_encode($value);
-    }
 
 
     /**
@@ -29,74 +21,61 @@ class ExampleTest extends TestCase
      *
      * @return void
      */
-    public function testBasicTest()
+    /*public function testBasicTest()
     {
-        $response = $this->get('/');
-        $response->assertRedirect( route('post.index') );
+      $response = $this->get('/');
+      $response->assertRedirect( url('api/v1') );
     }
 
-    public function testLoginTest()
+    public function testCountriesTest()
     {
-        // GET /login : View - log in
-        $response = $this->get('/login');
-        $response->assertViewIs('auth.login');
-        $response->assertSeeInOrder(['E-Mail Address', 'Password', 'Remember Me']);
+        // GET /countries : View all countries
+        $response = $this->get('/countries');
 
-        // POST /login : authenticate user
-        $credentials = [
-            'email' => 'mario44@elite.com', 'password' => 'mario44',
-            '_token' => 'lIXB7CSBLlfZ7JIKgNd9p8NVRp0qEIJrkFaHh93d'
-        ];
-        $response = $this->post('/login', $credentials);
-        $response->assertStatus(302);
-        $this->assertAuthenticated();
-
-//        $this->printValue( $this->user = Auth::user() );
-    }
-
-    public function testPostsTest()
-    {
-        // GET /posts : View - all posts
-        $response = $this->get('/posts');
         $response->assertSuccessful();
-        $response->assertViewIs('post.index');
-        $response->assertViewHasAll(['posts']);
+      
+        $response->assertJson([
+          "id" => 1, 
+          "name" => "Nigeria", 
+          "continent" => "Africa",
+          "created_at" => "2019-03-05 06:42:42"
+        ]);
     }
 
-    public function testShowPostTest()
+    public function testShowCountryTest()
     {
-        // GET /posts/:id : View - one post
-        $response = $this->get('/posts/{wrongId}');
+        // GET /countries/:id : View one country
+        $response = $this->get('/countries/wrongId');
         $response->assertNotFound();
 
-        $response = $this->get('/posts/2');
+        $response = $this->get('/countries/2');
         $response->assertSuccessful();
-        $response->assertViewIs('post.show');
-        $response->assertViewHasAll(['post']);
+        $response->assertViewIs('country.show');
+        $response->assertViewHasAll(['country']);
 
-        $this->assertEquals( $response->viewData('post')->id, 2 );
+        $this->assertEquals( $response->viewData('country')->id, 2 );
     }
 
-    public function testCreatePostTest()
+    public function testCreateCountryTest()
     {
-        // GET /posts/create : View - create post
-        $response = $this->get('/posts/create');
+        // GET /countries/create : View - create country
+        $response = $this->get('/countries/create');
         $this->assertGuest();
         $response->assertRedirect(route('login') );
 
         $user = Auth::loginUsingId(1);
         $this->assertAuthenticated();
 
-        $response = $this->actingAs($user)->get('/posts/create');
-        $response->assertViewIs('post.create');
+        $response = $this->actingAs($user)->get('/countries/create');
+        $response->assertViewIs('country.create');
         $response->assertViewHasAll(['categories']);
         $response->assertSeeInOrder(['Title', 'Body']);
     }
 
-    public function testStorePostTest()
+    public function testStoreCountryTest()
     {
-        // POST /posts : save new post
-        $post = [
+        // POST /countries : save new country
+        $country = [
             'title' => 'Feature Testing',
             'body' => 'A sublime article on PHPUnit capabilities'
         ];
@@ -104,31 +83,31 @@ class ExampleTest extends TestCase
         $user = Auth::loginUsingId(1);
         $this->assertAuthenticated();
 
-        $response = $this->actingAs($user)->post('/posts', $post);
+        $response = $this->actingAs($user)->country('/countries', $country);
 //        $response->assertSuccessful();
         $response->assertSessionHas('message');
-        $response->assertRedirect( route('post.index') );
+        $response->assertRedirect( route('country.index') );
     }
 
-    public function testEditPostTest()
+    public function testEditCountryTest()
     {
-        // GET /posts/{post}/edit : View - edit post
-        $response = $this->get('/posts/2/edit');
+        // GET /countries/{country}/edit : View - edit country
+        $response = $this->get('/countries/2/edit');
         $this->assertGuest();
         $response->assertRedirect( route('login') );
 
         $user = Auth::loginUsingId(1);
         $this->assertAuthenticated();
 
-        $response = $this->actingAs($user)->get('/posts/2/edit');
-        $response->assertViewIs('post.edit');
-        $response->assertViewHasAll(['categories', 'post']);
+        $response = $this->actingAs($user)->get('/countries/2/edit');
+        $response->assertViewIs('country.edit');
+        $response->assertViewHasAll(['categories', 'country']);
         $response->assertSeeInOrder(['Title', 'Body']);
     }
 
-    public function testUpdatePostTest()
+    public function testUpdateCountryTest()
     {
-        // PUT /posts/{post} : update post
+        // PUT /countries/{country} : update country
         $patch = [
             'title' => 'New Feature Testing',
             'body' => 'A sublime article on PHPUnit capabilities, updated Jan. 2019'
@@ -137,22 +116,22 @@ class ExampleTest extends TestCase
         $user = Auth::loginUsingId(1);
         $this->assertAuthenticated();
 
-        $response = $this->actingAs($user)->put('/posts/2', $patch);
+        $response = $this->actingAs($user)->put('/countries/2', $patch);
 //        $response->assertSuccessful();
-        $response->assertRedirect( route('post.show', ['post' => 2]) );
+        $response->assertRedirect( route('country.show', ['country' => 2]) );
     }
 
-    public function testDeletePostTest()
+    public function testDeleteCountryTest()
     {
-        // DELETE /posts/{post} : update post
+        // DELETE /countries/{country} : update country
         $user = Auth::loginUsingId(1);
         $this->assertAuthenticated();
 
-        $response = $this->actingAs($user)->delete('/posts/2');
+        $response = $this->actingAs($user)->delete('/countries/2');
 //        $response->assertSuccessful();
         $response->assertSessionHas('message');
-        $response->assertRedirect( route('post.index') );
-    }
+        $response->assertRedirect( route('country.index') );
+    }*/
 
 
 

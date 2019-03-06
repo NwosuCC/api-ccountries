@@ -46,5 +46,17 @@ The Audit Trail monitors user activities on the Country model.
 To view the audits, login with a test Admin account (use an email of the pattern admin@>anydomain<, i.e, 'admin' before the '@')
 
 
+### Testing
+You may want to create a separate database to use for testing.
+The included phpunit.xml specifies a default database name 'countries_testing'.
+~~~
+<php>
+    // ...
+    <env name="DB_DATABASE" value="countries_testing"/>
+</php>
+~~~
+You can change this according to your preference or need.
+
+
 ### Documentation
 For more information and sample calls, read the API documentation [here](https://documenter.getpostman.com/view/4155534/S11NMcFp)

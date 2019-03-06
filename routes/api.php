@@ -19,8 +19,11 @@ Route::any('/', function (){
 Route::group(['prefix' => 'v1'], function() {
 
   Route::namespace('Auth')->group(function () {
+//    dd((new \Illuminate\Http\Request)->json());
+
     Route::post('/register', 'RegisterController@register');
     Route::post('/login', 'LoginController@login');
+
   });
 
 
