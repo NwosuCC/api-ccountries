@@ -19,11 +19,17 @@ $factory->define(App\User::class, function (Faker $faker) {
   return [
     'first_name' => $faker->firstName,
     'last_name' => $faker->lastName,
-//    'date_of_birth' => $faker->dateTimeBetween('-50years', '-10years')->getTimestamp(), // seconds
-    'date_of_birth' => Carbon::make( $faker->dateTimeBetween('-50years', '-10years'))->toDateTimeString(),
+
+    // NOTE: Start time (-40years in this case) must evaluate to a date equal to or after "1970-01-01 00:00:00" (Epoch)
+    // MySQL (version ---) will NOT accept any earlier date as "DateTime" value
+    // 'date_of_birth' => $faker->dateTimeBetween('-40years', '-10years')->getTimestamp(), // seconds
+    'date_of_birth' => Carbon::make( $faker->dateTimeBetween('-40years', '-10years'))->toDateTimeString(),
+
     'email' => $faker->unique()->safeEmail,
     'username' => title_case( str_replace('.', '', $faker->userName)),
     'password' => '$2y$10$TKh8H1.PfQx37YgCzwiKb.KjNyWgaHb9cbcoQgdIVFlYg7B77UdFm', // secret
+
+    'user_id' => 1
   ];
 
 });

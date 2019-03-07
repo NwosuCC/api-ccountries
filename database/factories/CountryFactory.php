@@ -7,6 +7,8 @@ $factory->define(App\Country::class, function (Faker $faker) {
 
   return [
     'name' => ($name = $faker->country),
+    'continent' => $faker->timezone,
+    'user_id' => auth()->id()
   ];
 
 });
