@@ -20,15 +20,6 @@ class ContinentTitle
 
       $request->json()->set('continent', Continent::to_preferred_case($continent));
 
-      /*$continent_name = Continent::to_preferred_case(
-        $request->json()->get('continent')
-      );
-
-      $continent = Continent::where('name', $continent_name)->first();
-      dd($continent, 'HANDLE');
-
-      $request->json()->set('continent', $continent ? $continent->id : $continent_name);*/
-
       return $next($request);
     }
 }

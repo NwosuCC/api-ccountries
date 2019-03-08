@@ -22,7 +22,7 @@ class ContinentsTableSeeder extends Seeder
       );*/
 
       foreach (Continent::seed() as $continent){
-        factory(Continent::class)->create(['name' => $continent]);
+        factory(Continent::class)->state('seeding')->create(['name' => $continent]);
       }
     }
 }

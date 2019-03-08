@@ -17,17 +17,21 @@ class UserAccountTest extends ApiTestCase
   protected $model_name = User::class;
   protected $model_table = 'users';
 
+  private $options = [];
+  private $default_options = [
+    'assert_columns' => ['id', 'username', 'email']
+  ];
+
 
   /**
    * @test
    * DB : Store a User model instance in the database
    *
-   * @param array $options
    * @return \Illuminate\Database\Eloquent\Collection
    */
-  protected function _assert_DB_stores_user($options = []) {
-    $options['assert_columns'] = ['id', 'username', 'email'];
-    return $this->_assert_DB_stores_entry($options);
+  public function _assert_DB_stores_user() {
+    $this->options = array_merge($this->default_options, $this->options);
+    return $this->_assert_DB_stores_entry($this->options);
   }
 
 
@@ -66,8 +70,10 @@ class UserAccountTest extends ApiTestCase
   {
     // Create user, persisted. Apply state 'raw_pass' to UserFactory
     $password = 'secret';
-    $options = ['state' => 'raw_pass'];
-    $new_user = $this->_assert_DB_stores_user($options)->first();
+    $this->options = [
+      'states' => ['raw_pass']
+    ];
+    $new_user = $this->_assert_DB_stores_user()->first();
 
     $credentials = [
       "email" => $new_user->email,

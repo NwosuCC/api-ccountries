@@ -14,7 +14,7 @@ class ApiTestCase extends TestCase
   /**
    * Resets the entire migration after the tests
    */
-//  use RefreshDatabase;
+  use RefreshDatabase;
 
   /**
    * [Preferred] Wraps queries in transactions and rolls back after the tests
@@ -77,12 +77,34 @@ class ApiTestCase extends TestCase
 
 
   /**
+   * Sets an 'admin' email for authentication as Admin
+   * See project documentation on GitHub for more on admin emails
+   *
+   * @return $this
+   */
+  protected function asAdmin() {
+    $domain = str_random(8);
+
+    $this->attributes = ['email' => "admin@{$domain}.com"];
+
+    return $this;
+  }
+
+
+  /**
    * Set an API authenticated User
+   * If $this->asAdmin() was called just before this, the User is authenticated as ADMIN
+   *
    * @param $user [optional]
    * @return $this
    */
   protected function signIn($user = null) {
-    $user = $user ?: $this->factory(1,'App\User')->create()->first()  ;
+    if( ! $user){
+      $attributes = array_key_exists('email', $this->attributes) ? $this->attributes : [];
+      $this->attributes = [];
+
+      $user = $this->factory(1,'App\User')->create($attributes)->first();
+    }
 
     Passport::actingAs($user);
 
@@ -132,13 +154,14 @@ class ApiTestCase extends TestCase
     $count = $options['count'] ?? 1;
 
     $attributes = array_merge($this->attributes, ($options['attributes'] ?? []));
+    $this->attributes = [];
 
-    $state = $options['state'] ?? '';
+    $states = (array) ($options['states'] ?? []);
 
     $assert_columns = $options['assert_columns'] ?? [];
 
-    $entries = $state
-        ? $this->factory($count)->state($state)->create($attributes)
+    $entries = $states
+        ? $this->factory($count)->states($states)->create($attributes)
         : $this->factory($count)->create($attributes);
 
     $this->assertCount($count, $entries);

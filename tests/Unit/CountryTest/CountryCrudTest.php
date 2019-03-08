@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\CountryTest;
 
+use App\Continent;
 use App\Country;
 use Tests\ApiTestCase;
 
@@ -9,13 +10,14 @@ use Tests\ApiTestCase;
 /**
  * @group Country
  */
-class CountryCreateTest extends ApiTestCase
+class CountryCrudTest extends ApiTestCase
 {
 
   protected $model_name = Country::class;
   protected $model_table = 'countries';
 
-  private $options, $default_options = [
+  private $options = [];
+  private $default_options = [
     'assert_columns' => ['title']
   ];
 
@@ -26,8 +28,18 @@ class CountryCreateTest extends ApiTestCase
    *
    * @return \Illuminate\Database\Eloquent\Collection
    */
-  protected function _assert_DB_stores_country() {
+  public function _assert_DB_stores_country() {
+    if(empty($this->options['states']) || count($this->options['states']) < 2){
+      $this->options['states'][] = 'for_db_store';
+      $this->options['states'][] = 'created_by_other_users';
+    }
+
     $this->options = array_merge($this->default_options, $this->options);
+
+    foreach ($this->options as $key => $values){
+      $this->options[ $key ] = is_array($values) ? array_unique($values) : $values;
+    }
+
     return $this->_assert_DB_stores_entry($this->options);
   }
 
@@ -37,12 +49,15 @@ class CountryCreateTest extends ApiTestCase
    * See ApiTestCase::withAuthId() for more
    *
    * @param int $count
+   * @param bool $db_store [Optional]
    * @return \Illuminate\Database\Eloquent\Collection
    */
-  protected function createdByMe(int $count = 1) {
+  protected function createdByAuthUser(int $count = 1, $db_store = true) {
     $this->options = [
-      'count' => $count, 'state' => 'created_by_me'
+      'count' => $count, 'states' => ['created_by_me']
     ];
+
+    $this->options['states'][] = $db_store ? 'for_db_store' : 'for_http_api';
 
     $this->withAuthId();
 
@@ -53,18 +68,21 @@ class CountryCreateTest extends ApiTestCase
   /**
    * Create countries with other user id to be created in CountryFactory
    * @param int $count
+   * @param bool $db_store [Optional]
    * @return \Illuminate\Database\Eloquent\Collection
    */
-  protected function createdByOtherUser(int $count = 1) {
+  protected function createdByOtherUser(int $count = 1, $db_store = true) {
     $this->options = [
-      'count' => $count, 'state' => 'created_by_other_users'
+      'count' => $count, 'states' => ['created_by_other_users']
     ];
+
+    $this->options['states'][] = $db_store ? 'for_db_store' : 'for_http_api';
 
     return $this->_assert_DB_stores_country();
   }
 
 
-  /*
+  /**
    * @test
    * GET /api/v1/countries : Get All Countries
    */
@@ -72,10 +90,10 @@ class CountryCreateTest extends ApiTestCase
     // Authenticate to make requests
     $this->signIn();
 
-    $countries_by_me = $this->createdByMe(2);
-    $one_country_by_me = $countries_by_me->first();
+    $countries_by_auth = $this->createdByAuthUser(2);
+    $one_country_by_auth = $countries_by_auth->first();
 
-    $countries_by_others = $this->createdByOtherUser();
+    $countries_by_others = $this->createdByOtherUser(2);
     $one_country_by_others = $countries_by_others->first();
 
 
@@ -92,9 +110,9 @@ class CountryCreateTest extends ApiTestCase
     ], $response_country);
 
     $response->assertJsonFragment([
-      "id" => $one_country_by_me->id,
-      "name" => $one_country_by_me->name,
-      "continent" => $one_country_by_me->continent
+      "id" => $one_country_by_auth->id,
+      "name" => $one_country_by_auth->name,
+      "continent" => $one_country_by_auth->continent
     ]);
 
     $response->assertJsonFragment([
@@ -105,14 +123,14 @@ class CountryCreateTest extends ApiTestCase
   }
 
 
-  /*
+  /**
    * @test
    * POST /api/v1/countries : Create Country
    */
   public function CreateCountryTest()
   {
     // Create countries, persisted
-    $countries_attributes = $this->factory()->raw();
+    $countries_attributes = $this->factory()->state('for_http_api')->raw();
     $new_country_attributes = array_shift($countries_attributes);
 
     $url = $this->prefix('countries');
@@ -126,16 +144,21 @@ class CountryCreateTest extends ApiTestCase
       'id', 'name', 'continent', 'created_at'
     ], $response->json());
 
+
+    // Get the to-update $new_continent from its name
+    // Then, assert that the updated country 'continent_id' equals the 'id' of the $new_continent
+    $new_continent = Continent::fromName( $new_country_attributes['continent'] );
+
     $response->assertJsonFragment([
-      "name" => $new_country_attributes['name'],
-      "continent" => $new_country_attributes['continent'],
-      "created_at" => $new_country['created_at'],
       "id" => $new_country['id'],
+      "name" => $new_country_attributes['name'],
+      "created_at" => $new_country['created_at'],
+      "continent" => $response->json()['continent']
     ]);
   }
 
 
-  /*
+  /**
    * @test
    * GET /api/v1/countries/:id : Get One Country
    */
@@ -157,7 +180,7 @@ class CountryCreateTest extends ApiTestCase
     $response->assertJsonFragment([
       "id" => $country->id,
       "name" => $country->name,
-      "continent" => $country->continent,
+      "continent" => $country->continent
     ]);
   }
 
@@ -171,58 +194,101 @@ class CountryCreateTest extends ApiTestCase
     // Authenticate to make requests
     $this->signIn();
 
-    $countries_by_others = $this->createdByOtherUser();
+    $countries_by_others = $this->createdByOtherUser(2);
     $one_country_by_others = $countries_by_others->first();
 
-    $countries_by_me = $this->createdByMe(2);
-    $one_country_by_me = $countries_by_me->first();
+    $countries_by_auth = $this->createdByAuthUser(2);
+    $one_country_by_auth = $countries_by_auth->first();
 
     // Get new attributes to update the models with
-    $countries_attributes = $this->factory()->raw();
+    $countries_attributes = $this->factory()->state('for_http_api')->raw();
     $country_changes = array_shift($countries_attributes);
 
 
     /*
      * 1.) Edit country created by others : $one_country_by_others
-     *     Changes : name and continent
+     *     Changes : ['name', 'continent']
      *     Expects this Update to FAIL with 403 ('Unauthorised / Forbidden')
      */
     $url_other = $this->prefix('countries/' . $one_country_by_others->id);
     $response = $this->putJson( $url_other, $country_changes );
 
-    $response->assertForbidden();  // Code 403
+    // Code 403 : Auth user CANNOT update countries created by other users
+    $response->assertForbidden();
 
 
     /*
      * 2.) Edit country created by me : $one_country_by_others
-     *     Changes : name and continent
+     *     Changes : ['name', 'continent']
      *     Expects this Update to PASS with 200 ('Successful')
      */
-    $url_me = $this->prefix('countries/' . $one_country_by_me->id);
+    $url_me = $this->prefix('countries/' . $one_country_by_auth->id);
     $response = $this->putJson( $url_me, $country_changes );
 
+    // Code 200 : Auth user CAN update countries created by him/her
     $response->assertSuccessful();
+
 
     $response->assertJsonStructure([
       'id', 'name', 'continent', 'created_at'
     ], $response->json());
-    dd($one_country_by_me->getAttributes(), $country_changes, $response->json());
+
+
+    // Get the to-update $new_continent from its name
+    // Then, assert that the updated country 'continent_id' equals the 'id' of the $new_continent
+//    $new_continent = Continent::fromName( $country_changes['continent'] );
 
     $response->assertJsonFragment([
-      "id" => $one_country_by_me->id,
       "name" => $country_changes['name'],
-      "continent" => $country_changes['continent'],
+      "id" => $one_country_by_auth->id,
+      "continent" => $response->json()['continent']
     ]);
   }
 
 
-  /*
-    $this->assertSoftDeleted([
-      "id" => $country->id,
-      "name" => $country->name,
-      "continent" => $country->continent,
-    ]);
+  /**
+   * @test
+   * DELETE /api/v1/countries/:id : Delete Country
    */
+  public function DeleteCountryTest()
+  {
+    // Authenticate to make requests
+    $this->signIn();
+
+    $countries_by_others = $this->createdByOtherUser(1);
+    $one_country_by_others = $countries_by_others->first();
+
+    $countries_by_auth = $this->createdByAuthUser(1);
+    $one_country_by_auth = $countries_by_auth->first();
+
+
+    /*
+     * 1.) Delete country created by others : $one_country_by_others
+     *     Expects this Delete to FAIL with 403 ('Unauthorised / Forbidden')
+     */
+    $url_other = $this->prefix('countries/' . $one_country_by_others->id);
+    $response = $this->deleteJson( $url_other );
+
+    // Code 403 : Auth user CANNOT update countries created by other users
+    $response->assertForbidden();
+
+
+    /*
+     * 2.) Delete country created by me : $one_country_by_others
+     *     Expects this Delete to PASS with 200 ('Successful')
+     */
+    $url_me = $this->prefix('countries/' . $one_country_by_auth->id);
+    $response = $this->deleteJson( $url_me );
+
+    // Code 200 : Auth user CAN update countries created by him/her
+    $response->assertSuccessful();
+
+
+    $this->assertSoftDeleted($this->model_table, [
+      "id" => $one_country_by_auth->id,
+      "name" => $one_country_by_auth->name,
+    ]);
+  }
 
 
 }

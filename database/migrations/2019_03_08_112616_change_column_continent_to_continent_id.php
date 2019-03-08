@@ -13,13 +13,13 @@ class ChangeColumnContinentToContinentId extends Migration
      */
     public function up()
     {
-        /*Schema::table('countries', function (Blueprint $table) {
+        Schema::table('countries', function (Blueprint $table) {
           $table->dropColumn('continent');
         });
 
         Schema::table('countries', function (Blueprint $table) {
           $table->integer('continent_id')->after('name');
-        });*/
+        });
     }
 
     /**
@@ -29,12 +29,12 @@ class ChangeColumnContinentToContinentId extends Migration
      */
     public function down()
     {
-      /*Schema::table('countries', function (Blueprint $table) {
+      Schema::table('countries', function (Blueprint $table) {
         $table->dropColumn('continent_id');
       });
 
       Schema::table('countries', function (Blueprint $table) {
         $table->string('continent')->after('name');
-      });*/
+      });
     }
 }

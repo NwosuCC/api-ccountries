@@ -28,10 +28,6 @@ class CountryRequest extends FormRequest
     {
         $country = $this->route('country');
 
-        // ToDo: use Middleware -- Done
-        // $this->request->set('continent', Country::to_preferred_case($this->request->get('continent')));
-
-
         return [
             'name' => [
                 'required', 'string',

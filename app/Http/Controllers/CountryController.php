@@ -15,11 +15,10 @@ class CountryController extends Controller
     }
 
 
-    public function index()
-    {
-        $countries = Country::all();
+    public function index(){
+      $countries = Country::all();
 
-        return response()->json($countries, 200);
+      return response()->json($countries, 200);
     }
 
 
@@ -29,11 +28,15 @@ class CountryController extends Controller
 
 
     public function store(CountryRequest $request) {
-      $country = Country::create([
+      $country = (new Country)->fill([
           'name' => $request->input('name'),
-          'continent' => $request->input('continent'),
           'user_id' => auth()->id()
       ]);
+
+      $continent_name = $request->input('continent');
+      $country = (new Continent)->addCountry($country, $continent_name);
+
+      $country->save();
 
       return response()->json($country, 200);
     }
@@ -50,16 +53,16 @@ class CountryController extends Controller
 
 
     public function update(CountryRequest $request, Country $country) {
-        $this->authorize('update', $country);
+      $this->authorize('update', $country);
 
-        $continent = Continent::fromName($request->input('continent'));
+      $continent_name = $request->input('continent');
+      $country = (new Continent)->addCountry($country, $continent_name);
 
-        $country->update([
-          'name' => $request->input('name'),
-          'continent' => ($continent->addCountry($country))->id
-        ]);
+      $country->update([
+        'name' => $request->input('name'),
+      ]);
 
-        return response()->json($country, 200);
+      return response()->json($country, 200);
     }
 
 

@@ -15,7 +15,7 @@ class Continent extends Model implements Auditable
   ];
 
   protected $hidden = [
-    'deleted_at', 'updated_at', 'user_id'
+    'deleted_at', 'created_at', 'updated_at', 'user_id'
   ];
 
   /**
@@ -27,18 +27,25 @@ class Continent extends Model implements Auditable
 
 
   public function countries(){
-    return $this->hasMany(Country::class);
+    return $this->hasMany(Country::class)->latest();
   }
 
 
-  public function addCountry(Country $country){
-    $country->setAttribute('continent_id', $this->id);
+  public function addCountry(Country $country, $input_name = ''){
+    $continent = ($input_name) ? Continent::fromName($input_name) : $this;
+
+    $country->setAttribute('continent_id', $continent->id);
+
     return $country;
   }
 
 
-  public function scopeFromName($query, $input){
-    return $query->where('name', $input)->first();
+  /**
+   * @param $input
+   * @return \App\Continent
+   */
+  public static function fromName($input){
+    return Continent::where('name', $input)->first();
   }
 
 

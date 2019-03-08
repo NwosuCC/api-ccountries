@@ -48,14 +48,23 @@ To view the audits, login with a test Admin account (use an email of the pattern
 ### Testing
 The project includes some Unit and Feature tests.
 To run the tests, you may want to create a separate test database.
-The included phpunit.xml specifies a default name 'countries_testing' for the test database.
+The included phpunit.xml specifies a default name 'countries_testing' for the test database. Of course, you can change this according to your preference or need.
   ~~~
   <php>
       // ...
       <env name="DB_DATABASE" value="countries_testing"/>
   </php>
   ~~~
-Of course, you can change this according to your preference or need.
+
+The tests are categorised into Suites and Groups to ease bug trace. You can run any of them like so:
+~~~
+"vendor/bin/phpunit" --group=Api
+"vendor/bin/phpunit" --group=User
+"vendor/bin/phpunit" --group=Country
+"vendor/bin/phpunit" --testsuite=Unit --stop-on-defect
+~~~
+
+The argument **--stop-on-defect** will halt the test execution once any failure is encountered
 
 
 ### Documentation
