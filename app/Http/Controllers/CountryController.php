@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Continent;
 use App\Country;
 use App\Http\Requests\CountryRequest;
 
@@ -28,13 +29,13 @@ class CountryController extends Controller
 
 
     public function store(CountryRequest $request) {
-        $country = Country::create([
-            'name' => $request->input('name'),
-            'continent' => $request->input('continent'),
-            'user_id' => auth()->id()
-        ]);
+      $country = Country::create([
+          'name' => $request->input('name'),
+          'continent' => $request->input('continent'),
+          'user_id' => auth()->id()
+      ]);
 
-        return response()->json($country, 200);
+      return response()->json($country, 200);
     }
 
 
@@ -51,8 +52,11 @@ class CountryController extends Controller
     public function update(CountryRequest $request, Country $country) {
         $this->authorize('update', $country);
 
+        $continent = Continent::fromName($request->input('continent'));
+
         $country->update([
-            'name' => $request->input('name'),
+          'name' => $request->input('name'),
+          'continent' => ($continent->addCountry($country))->id
         ]);
 
         return response()->json($country, 200);

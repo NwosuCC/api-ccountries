@@ -2,7 +2,7 @@
 
 namespace Tests;
 
-use Illuminate\Support\Collection;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Laravel\Passport\Passport;
@@ -14,7 +14,7 @@ class ApiTestCase extends TestCase
   /**
    * Resets the entire migration after the tests
    */
-  use RefreshDatabase;
+//  use RefreshDatabase;
 
   /**
    * [Preferred] Wraps queries in transactions and rolls back after the tests
@@ -27,17 +27,21 @@ class ApiTestCase extends TestCase
   protected $model_name = '';
   protected $model_table = '';
 
+  private $attributes = [];
+
   protected $user;
 
 
   protected function setUp(){
     parent::setUp();
 
+    \Artisan::call('migrate', ['-vvv' => true, '--seed' => true]);
     \Artisan::call('passport:install', ['-vvv' => true]);
   }
 
   /**
    * Return an instance of the model specified in the child class
+   * @return \App\Model
    */
   protected function model() {
     if(!$this->model && $this->model_name) {
@@ -75,7 +79,7 @@ class ApiTestCase extends TestCase
   /**
    * Set an API authenticated User
    * @param $user [optional]
-   * @return mixed
+   * @return $this
    */
   protected function signIn($user = null) {
     $user = $user ?: $this->factory(1,'App\User')->create()->first()  ;
@@ -83,6 +87,19 @@ class ApiTestCase extends TestCase
     Passport::actingAs($user);
 
     $this->user = $user;
+
+    return $this;
+  }
+
+
+  /**
+   * Captures the user_id of an authenticated User, e.g for creation of other models
+   * @return $this
+   */
+  protected function withAuthId() {
+    if($this->user){
+      $this->attributes = ['user_id' => $this->user->id];
+    }
 
     return $this;
   }
@@ -99,10 +116,26 @@ class ApiTestCase extends TestCase
   }
 
 
-  protected function _assert_DB_stores_entry($count = 1, array $columns = [], array $options = []) {
-    $attributes = $options['attributes'] ?? [];
+  /**
+   * Inserts model entries into the database and makes default/specified assertions
+   * Used to test that database operation is OK before proceeding with Http calls
+   *
+   * @param array $options
+   *    $options['count'] => Specifies the number of model instances to create
+   *    $options['state'] => Specifies the model factory state to apply
+   *    $options['attributes'] => Specifies which model attributes to overwrite
+   *    $options['assert_columns'] => Specifies the columns to test during DB assertions
+   *
+   *@return \Illuminate\Database\Eloquent\Collection
+   */
+  protected function _assert_DB_stores_entry(array $options = []) {
+    $count = $options['count'] ?? 1;
+
+    $attributes = array_merge($this->attributes, ($options['attributes'] ?? []));
 
     $state = $options['state'] ?? '';
+
+    $assert_columns = $options['assert_columns'] ?? [];
 
     $entries = $state
         ? $this->factory($count)->state($state)->create($attributes)
@@ -110,8 +143,8 @@ class ApiTestCase extends TestCase
 
     $this->assertCount($count, $entries);
 
-    if($columns){
-      $this->_assert_DB_has_entries($entries, $columns);
+    if($assert_columns){
+      $this->_assert_DB_has_entries($entries, $assert_columns);
     }
 
     return $entries;

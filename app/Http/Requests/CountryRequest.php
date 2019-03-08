@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests;
 
-use App\Country;
+use App\Continent;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -39,7 +39,7 @@ class CountryRequest extends FormRequest
             ],
             'continent' => [
                 'string',
-                Rule::in( Country::continents() ),
+                Rule::exists('continents', 'name'),
             ],
         ];
     }

@@ -3,8 +3,6 @@
 namespace Tests\Unit\UserTest;
 
 use App\User;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\ValidationException;
 use Tests\ApiTestCase;
 
 
@@ -24,11 +22,12 @@ class UserAccountTest extends ApiTestCase
    * @test
    * DB : Store a User model instance in the database
    *
-   * @param int $count
+   * @param array $options
    * @return \Illuminate\Database\Eloquent\Collection
    */
-  protected function _assert_DB_stores_user($count = 1) {
-    return $this->_assert_DB_stores_entry($count, ['id', 'username', 'email']);
+  protected function _assert_DB_stores_user($options = []) {
+    $options['assert_columns'] = ['id', 'username', 'email'];
+    return $this->_assert_DB_stores_entry($options);
   }
 
 
@@ -39,11 +38,10 @@ class UserAccountTest extends ApiTestCase
   public function RegisterUserTest()
   {
     // Simply get user attributes, as Array, directly from the factory
-    $count = 1;
-    $attributes = $this->factory($count)->raw(['password' => 'secret']);
-    $new_user = array_shift($attributes);
+    $users_attributes = $this->factory()->raw(['password' => 'secret']);
+    $new_user_attributes = array_shift($users_attributes);
 
-    $response = $this->post( $this->prefix('register'), $new_user );
+    $response = $this->post( $this->prefix('register'), $new_user_attributes );
 
     $response->assertStatus(200);
 
@@ -54,8 +52,8 @@ class UserAccountTest extends ApiTestCase
 
     // Check returned json contains posted user information
     $response->assertJson([
-      "email" => $new_user['email'],
-      "username" => $new_user['username']
+      "email" => $new_user_attributes['email'],
+      "username" => $new_user_attributes['username']
     ]);
   }
 
@@ -66,11 +64,10 @@ class UserAccountTest extends ApiTestCase
    */
   public function LoginUserTest()
   {
-    // Create user, persisted
-    $count = 1;
+    // Create user, persisted. Apply state 'raw_pass' to UserFactory
     $password = 'secret';
-
-    $new_user = $this->factory($count)->state('raw_pass')->create()->first();
+    $options = ['state' => 'raw_pass'];
+    $new_user = $this->_assert_DB_stores_user($options)->first();
 
     $credentials = [
       "email" => $new_user->email,
@@ -85,7 +82,7 @@ class UserAccountTest extends ApiTestCase
       'id', 'email', 'username', 'token'
     ], $response->json());
 
-    $response->assertJson([
+    $response->assertJsonFragment([
       "id" => $new_user->id,
       "email" => $new_user->email,
       "username" => $new_user->username,

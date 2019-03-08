@@ -1,21 +1,30 @@
 <?php
 
+use App\Continent;
+use App\Country;
+use App\User;
 use Faker\Generator as Faker;
+use Illuminate\Support\Carbon;
 
 
-$factory->define(App\Country::class, function (Faker $faker) {
+$factory->define(Country::class, function (Faker $faker) {
 
   return [
-    'name' => ($name = $faker->country),
-    'continent' => $faker->timezone,
-    'user_id' => auth()->id()
+    'name' => $faker->country,
+    'continent' => factory(Continent::class)->make()->name,
   ];
 
 });
 
-$factory->state(App\Country::class, 'deleted_country', function ($faker) {
+$factory->state(Country::class, 'created_by_me', function ($faker) {
   return [
-    'deleted_at' => Carbon\Carbon::now()->subSecond()
+    'user_id' => auth()->id()
+  ];
+});
+
+$factory->state(Country::class, 'created_by_other_users', function ($faker) {
+  return [
+    'user_id' => factory(User::class)->create()->id,
   ];
 });
 

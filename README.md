@@ -7,7 +7,7 @@ This API lets an authenticated User perform basic CRUD operations on Country mod
 ## Overview
 Just three simple steps to interact with the API:
 - Create an account
-- Authenticate and obtain an access token
+- Authenticate and obtain an oauth access token
 - Play with the Country model
 
 
@@ -21,16 +21,15 @@ Just three simple steps to interact with the API:
     - Your preferred APP_KEY_NAME for the to-be-generated tokens
     - Your Database credentials
 
--  Publish the Laravel Auditing provider to create the config and migration files it needs 
-    ~~~
-     php artisan vendor:publish --provider "OwenIt\Auditing\AuditingServiceProvider" --tag="config"
-     php artisan vendor:publish --provider "OwenIt\Auditing\AuditingServiceProvider" --tag="migrations"
-    ~~~
-
--  Generate new App key and run migrations  
+-  Generate new App key and run migrations. Default Continents (7) will be seeded in the database.
     ~~~
     php artisan key:generate
-    php artisan migrate
+    php artisan migrate --seed
+    ~~~
+
+-  Finally, install Laravel Passport to create the default Clients
+    ~~~
+       php artisan passport:install
     ~~~
 
 
@@ -47,15 +46,16 @@ To view the audits, login with a test Admin account (use an email of the pattern
 
 
 ### Testing
-You may want to create a separate database to use for testing.
-The included phpunit.xml specifies a default database name 'countries_testing'.
-~~~
-<php>
-    // ...
-    <env name="DB_DATABASE" value="countries_testing"/>
-</php>
-~~~
-You can change this according to your preference or need.
+The project includes some Unit and Feature tests.
+To run the tests, you may want to create a separate test database.
+The included phpunit.xml specifies a default name 'countries_testing' for the test database.
+  ~~~
+  <php>
+      // ...
+      <env name="DB_DATABASE" value="countries_testing"/>
+  </php>
+  ~~~
+Of course, you can change this according to your preference or need.
 
 
 ### Documentation

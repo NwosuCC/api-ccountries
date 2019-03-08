@@ -28,15 +28,12 @@ $factory->define(App\User::class, function (Faker $faker) {
     'email' => $faker->unique()->safeEmail,
     'username' => title_case( str_replace('.', '', $faker->userName)),
     'password' => '$2y$10$TKh8H1.PfQx37YgCzwiKb.KjNyWgaHb9cbcoQgdIVFlYg7B77UdFm', // secret
-
-    'user_id' => 1
   ];
 
 });
 
 $factory->state(App\User::class, 'raw_pass', function ($faker, $value) {
   return [
-//    'password' => bcrypt( $value['password'] )
     'password' => bcrypt( 'secret' )
   ];
 });
