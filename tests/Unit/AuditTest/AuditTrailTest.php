@@ -18,9 +18,7 @@ class AuditTrailTest extends ApiTestCase
   protected $model_table = 'audits';
 
   private $options = [];
-  private $default_options = [
-    'assert_columns' => ['user_id', 'event']
-  ];
+  private $default_options = [];
 
 
   /**
