@@ -118,7 +118,8 @@ class ApiTestCase extends TestCase
    * Captures the user_id of an authenticated User, e.g for creation of other models
    * @return $this
    */
-  protected function withAuthId() {
+  protected function withAuthId()
+  {
     if($this->user){
       $this->attributes = ['user_id' => $this->user->id];
     }
@@ -127,8 +128,10 @@ class ApiTestCase extends TestCase
   }
 
 
-  protected function _assert_DB_has_entries(Collection $entries, array $columns) {
+  protected function _assert_DB_has_entries(Collection $entries, array $columns)
+  {
     $entries->each(function ($entry) use ($entries, $columns) {
+
       $entry_properties = array_intersect_key(
         $entry->toArray(), array_fill_keys($columns, '')
       );
@@ -148,12 +151,13 @@ class ApiTestCase extends TestCase
    *    $options['attributes'] => Specifies which model attributes to overwrite
    *    $options['assert_columns'] => Specifies the columns to test during DB assertions
    *
-   *@return \Illuminate\Database\Eloquent\Collection
+   * @return \Illuminate\Database\Eloquent\Collection
    */
   protected function _assert_DB_stores_entry(array $options = []) {
     $count = $options['count'] ?? 1;
 
     $attributes = array_merge($this->attributes, ($options['attributes'] ?? []));
+
     $this->attributes = [];
 
     $states = (array) ($options['states'] ?? []);

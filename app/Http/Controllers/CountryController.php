@@ -27,14 +27,15 @@ class CountryController extends Controller
     }
 
 
-    public function store(CountryRequest $request) {
-      $country = (new Country)->fill([
+    public function store(CountryRequest $request)
+    {
+      $country = Country::model()->fill([
           'name' => $request->input('name'),
           'user_id' => auth()->id()
       ]);
 
       $continent_name = $request->input('continent');
-      $country = (new Continent)->addCountry($country, $continent_name);
+      $country = Continent::model()->addCountry($country, $continent_name);
 
       $country->save();
 

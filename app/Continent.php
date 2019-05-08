@@ -31,8 +31,9 @@ class Continent extends Model implements Auditable
   }
 
 
-  public function addCountry(Country $country, $input_name = ''){
-    $continent = ($input_name) ? Continent::fromName($input_name) : $this;
+  public function addCountry(Country $country, string $continent_name = null)
+  {
+    $continent = ($continent_name) ? Continent::fromName($continent_name) : $this;
 
     $country->setAttribute('continent_id', $continent->id);
 
@@ -62,7 +63,9 @@ class Continent extends Model implements Auditable
         'Africa', 'Antarctica', 'Asia', 'Australia', 'Europe', 'North America', 'South America'
       ];
 
-      static::$seed = array_map(function ($value) { return static::to_preferred_case($value); }, $continents);
+      static::$seed = array_map(function ($value) {
+        return static::to_preferred_case($value);
+      }, $continents);
     }
 
     return static::$seed;

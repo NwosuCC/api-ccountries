@@ -14,9 +14,11 @@ class CountryCrudTest extends ApiTestCase
 {
 
   protected $model_name = Country::class;
+
   protected $model_table = 'countries';
 
   private $options = [];
+
   private $default_options = [
     'assert_columns' => ['title']
   ];
@@ -28,7 +30,8 @@ class CountryCrudTest extends ApiTestCase
    *
    * @return \Illuminate\Database\Eloquent\Collection
    */
-  public function _assert_DB_stores_country() {
+  public function _assert_DB_stores_country()
+  {
     if(empty($this->options['states']) || count($this->options['states']) < 2){
       $this->options['states'][] = 'for_db_store';
       $this->options['states'][] = 'created_by_other_users';

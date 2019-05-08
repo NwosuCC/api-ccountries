@@ -18,4 +18,10 @@ class Model extends Eloquent
      */
     protected $dates = ['deleted_at'];
 
+
+    /** @return static */
+    public static function model()
+    {
+      return app()->make(static::class);
+    }
 }
