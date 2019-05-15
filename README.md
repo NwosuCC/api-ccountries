@@ -1,4 +1,4 @@
-# API-Countries
+# API-Countries 
 
 ## Introduction
 This API lets an authenticated User perform basic CRUD operations on Country model
@@ -37,7 +37,7 @@ Just three simple steps to interact with the API:
 The API uses JWToken-based OAuth via Laravel Passport to authenticate each request.
 A new token is generated and returned on each successful login
 
-The token, as expected, gives each user exclusive MODIFY privileges to the resources the user created
+The token, as expected, gives each user exclusive MODIFY privileges to the resources the user created.
 
 
 ### Audit Trail
