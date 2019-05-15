@@ -1,4 +1,4 @@
-# API-Countries 
+# API-Countries  [![Build Status](https://travis-ci.org/NwosuCC/api-ccountries.svg?branch=master)](https://travis-ci.org/NwosuCC/api-ccountries)
 
 ## Introduction
 This API lets an authenticated User perform basic CRUD operations on Country model
