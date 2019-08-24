@@ -12,21 +12,21 @@ class LoginController extends Controller
 {
     use HasApiTokens, Notifiable;
 
-    public function __construct()
-    {
-    }
-
     public function login()
     {
-      if(auth()->attempt(request(['email', 'password']))){
+        if(auth()->attempt(request(['email', 'password']))){
 
-        $user = auth()->user();
+            $user = auth()->user();
 
-        $user->token = $user->createToken(User::tokenName())->accessToken;
+            $user->token = $user->createToken(User::tokenName())->accessToken;
 
-        return response()->json($user, 200);
-      }
+            return response()->json($user, 200);
+        }
 
-      return abort(401, "Incorrect username or password");
+        $data = [
+            "error" => "Incorrect username or password"
+        ];
+
+        return response()->json($data, 401);
     }
 }

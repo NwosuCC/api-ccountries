@@ -24,12 +24,22 @@ Just three simple steps to interact with the API:
 -  Generate new App key and run migrations. Default Continents (7) will be seeded in the database.
     ~~~
     php artisan key:generate
-    php artisan migrate --seed
+    php artisan migrate
     ~~~
 
--  Finally, install Laravel Passport to create the default Clients
+-  Next, install Laravel Passport to create the default Clients
     ~~~
        php artisan passport:install
+    ~~~
+
+-  (Optional) Add Laravel Passport service provider to Providers array in config/app.php
+    ~~~
+       Laravel\Passport\PassportServiceProvider::class,
+    ~~~
+
+-  Finally, seed the database with default Continents (7)
+    ~~~
+    php artisan db:seed
     ~~~
 
 
