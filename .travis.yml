@@ -14,7 +14,6 @@ before_script:
   - composer self-update
   #- composer install --prefer-source --no-interaction
   - composer install --no-interaction
-  - php artisan key:generate
   # Inspect PhpUnit version
   - phpunit --version
 
