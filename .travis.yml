@@ -12,13 +12,13 @@ php:
 # Commands to be run before your environment runs.
 before_script:
   # Setup ENV
-  - cp .env.travis .env
+  # - cp .env.travis .env
   # - mysql -e 'create database countries_testing;'
   #
   # Install Dependencies
   - composer self-update
-  - composer install --no-interaction
-  - composer run-script post-create-project-cmd  # Generate App Key, etc
+  - composer install --prefer-source --no-interaction
+  # - composer run-script post-create-project-cmd  # Generate App Key, etc
   #
   # Test: Inspect PhpUnit version
   # Version on CI server
