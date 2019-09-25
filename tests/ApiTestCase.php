@@ -2,6 +2,9 @@
 
 namespace Tests;
 
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Facade;
+
 use Laravel\Passport\Passport;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Database\Eloquent\Collection;
@@ -35,7 +38,23 @@ class ApiTestCase extends TestCase
 
   protected function setUp(): void
   {
-    parent::setUp();
+//    parent::setUp();
+
+      if (! $this->app) {
+          $this->refreshApplication();
+      }
+
+      $this->setUpTraits();
+
+      foreach ($this->afterApplicationCreatedCallbacks as $callback) {
+          call_user_func($callback);
+      }
+
+      Facade::clearResolvedInstances();
+
+      Model::setEventDispatcher($this->app['events']);
+
+      $this->setUpHasRun = true;
 
     Artisan::call('migrate', ['-vvv' => true, '--seed' => true]);
     Artisan::call('passport:install', ['-vvv' => true]);
