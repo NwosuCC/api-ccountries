@@ -12,23 +12,25 @@ php:
 # Commands to be run before your environment runs.
 before_script:
   # Setup ENV
-  # - cp .env.travis .env
-  # - mysql -e 'create database countries_testing;'
+  - cp .env.travis .env
+  - mysql -e 'create database countries_testing;'
   #
   # Install Dependencies
   - composer self-update
   - composer install --no-interaction
-  - composer run-script post-root-package-install
-  - composer run-script post-create-project-cmd
+  - composer run-script post-create-project-cmd  # Generate App Key, etc
   #
   # Test: Inspect PhpUnit version
+  # Version on CI server
   - phpunit --version
+  # Version on Project Deps
+  - ./vendor/bin/phpunit --version
 
 # Commands you want to run that will verify your build.
 script:
   # PHPUnit
   # - Do NOT run just "phpunit" except you want the CI build machine to run an updated version of PHPUnit (8.0.2 at this time)
-  # - For compatibility, run "./vendor/bin/phpunit" to run the exact version specified in your project
+  # - For compatibility, run "./vendor/bin/phpunit" to run the exact version used in your project (7.5.3 at this time)
   - ./vendor/bin/phpunit
 
 # allow_failures: Allow this build to fail under the specified environments.
