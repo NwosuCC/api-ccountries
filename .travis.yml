@@ -26,8 +26,10 @@ before_script:
 
 # Commands you want to run that will verify your build.
 script:
-  - phpunit
-  # - ./vendor/bin/phpunit
+  # PHPUnit
+  # - Do NOT run just "phpunit" except you want the CI build machine to run an updated version of PHPUnit (8.0.2 at this time)
+  # - For compatibility, run "./vendor/bin/phpunit" to run the exact version specified in your project
+  - ./vendor/bin/phpunit
 
 # allow_failures: Allow this build to fail under the specified environments.
 # fast_finish: If your build fails do not continue trying to build, just stop.
