@@ -2,10 +2,11 @@
 
 namespace Tests;
 
+use Laravel\Passport\Passport;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
-use Laravel\Passport\Passport;
 
 
 class ApiTestCase extends TestCase
@@ -32,11 +33,12 @@ class ApiTestCase extends TestCase
   protected $user;
 
 
-  protected function setUp(){
+  protected function setUp(): void
+  {
     parent::setUp();
 
-    \Artisan::call('migrate', ['-vvv' => true, '--seed' => true]);
-    \Artisan::call('passport:install', ['-vvv' => true]);
+    Artisan::call('migrate', ['-vvv' => true, '--seed' => true]);
+    Artisan::call('passport:install', ['-vvv' => true]);
   }
 
   /**
