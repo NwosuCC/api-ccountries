@@ -13,7 +13,7 @@ services:
 before_script:
   # Setup ENV
   - cp .env.travis .env
-  - mysql -e 'create database countries_testing;'
+  - mysql -e 'create database countries;'
   #
   # Install dependencies and run migrations
   - composer self-update
@@ -22,17 +22,11 @@ before_script:
   - php artisan migrate
   - php artisan passport:install
   - php artisan db:seed
-  #
-  # Test: Inspect PhpUnit version
-  # Version on CI server
-  - phpunit --version
-  # Version on Project Deps
-  - ./vendor/bin/phpunit --version
 
 # Commands you want to run that will verify your build.
 script:
   # PHPUnit
-  # - Do NOT run just "phpunit" except you want the CI build machine to run an updated version of PHPUnit (8.0.2 at this time)
+  # - Do NOT run just "phpunit" except you want the CI build machine to run the (likely updated) version of PHPUnit (8.0.2 at this time)
   # - For compatibility, run "./vendor/bin/phpunit" to run the exact version used in your project (7.5.3 at this time)
   - ./vendor/bin/phpunit
 
