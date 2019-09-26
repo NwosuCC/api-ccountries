@@ -15,10 +15,13 @@ before_script:
   - cp .env.travis .env
   - mysql -e 'create database countries_testing;'
   #
-  # Install Dependencies
+  # Install dependencies and run migrations
   - composer self-update
   - composer install --prefer-source --no-interaction
   - composer run-script post-create-project-cmd  # Generate App Key, etc
+  - php artisan migrate
+  - php artisan passport:install
+  - php artisan db:seed
   #
   # Test: Inspect PhpUnit version
   # Version on CI server
