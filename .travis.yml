@@ -13,7 +13,7 @@ services:
 before_script:
   # Setup ENV
   - cp .env.travis .env
-  - mysql -e 'create database countries;'
+  - mysql -e 'create database countries_testing;'
   #
   # Install dependencies and run migrations
   - composer self-update
