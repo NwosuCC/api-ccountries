@@ -1,9 +1,40 @@
 version: '2'
 services:
-  app:
-    build: .
+  web:
+    container_name: api_countries
+      # To login to this (linux?)) server:
+      # - run "docker compose up" to start this 'api_countries' container
+      # - open a new terminal and run "docker exec -it api_countries bash -l"
+    build:
+      context: .
+#      target: prod  # Build the specified stage
+      #dockerfile: container-build/web/Dockerfile
+      dockerfile: ./Dockerfile
+    environment:
+      - MYSQL_HOST=db
     image: app:1.0.0
-    volumes:
-    - ./:/var/www/html
     ports:
-    - "8080:80"
+    - 8080:80
+    volumes:
+      - ./:/var/www/html
+    depends_on:
+      - db
+
+  db:
+    image: mysql:5.7
+    container_name: mysql-server-80
+      # To login to this mysql server:
+      # - run "docker compose up" to start this 'mysql-server-80' container
+      # - open a new terminal and run "docker exec -it mysql-server-80 bash -l"
+    ports:
+      - 6603:3306
+#    restart: always  # MySQL server is restarted each time the container goes up
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      - MYSQL_ROOT_PASSWORD=countries  # This is the password for mysql root user 'root'@localhost
+      - MYSQL_USER=countries
+      - MYSQL_PASSWORD=countries-k
+      - MYSQL_DATABASE=countries
+
+volumes:
+  mysql_data: { driver: local }
