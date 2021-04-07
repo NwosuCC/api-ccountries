@@ -2061,6 +2061,11 @@
                 "pseudorandom",
                 "random"
             ],
+            "support": {
+                "email": "info@paragonie.com",
+                "issues": "https://github.com/paragonie/random_compat/issues",
+                "source": "https://github.com/paragonie/random_compat"
+            },
             "time": "2018-07-02T15:55:56+00:00"
         },
         {
@@ -2231,16 +2236,16 @@
         },
         {
             "name": "phpseclib/phpseclib",
-            "version": "2.0.14",
+            "version": "2.0.31",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpseclib/phpseclib.git",
-                "reference": "8ebfcadbf30524aeb75b2c446bc2519d5b321478"
+                "reference": "233a920cb38636a43b18d428f9a8db1f0a1a08f4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpseclib/phpseclib/zipball/8ebfcadbf30524aeb75b2c446bc2519d5b321478",
-                "reference": "8ebfcadbf30524aeb75b2c446bc2519d5b321478",
+                "url": "https://api.github.com/repos/phpseclib/phpseclib/zipball/233a920cb38636a43b18d428f9a8db1f0a1a08f4",
+                "reference": "233a920cb38636a43b18d428f9a8db1f0a1a08f4",
                 "shasum": ""
             },
             "require": {
@@ -2248,8 +2253,7 @@
             },
             "require-dev": {
                 "phing/phing": "~2.7",
-                "phpunit/phpunit": "^4.8.35|^5.7|^6.0",
-                "sami/sami": "~2.0",
+                "phpunit/phpunit": "^4.8.35|^5.7|^6.0|^9.4",
                 "squizlabs/php_codesniffer": "~2.0"
             },
             "suggest": {
@@ -2319,7 +2323,25 @@
                 "x.509",
                 "x509"
             ],
-            "time": "2019-01-27T19:37:29+00:00"
+            "support": {
+                "issues": "https://github.com/phpseclib/phpseclib/issues",
+                "source": "https://github.com/phpseclib/phpseclib/tree/2.0.31"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/terrafrost",
+                    "type": "github"
+                },
+                {
+                    "url": "https://www.patreon.com/phpseclib",
+                    "type": "patreon"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/phpseclib/phpseclib",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2021-04-06T13:56:45+00:00"
         },
         {
             "name": "psr/container",
@@ -4222,45 +4244,6 @@
             "time": "2016-01-20T08:20:44+00:00"
         },
         {
-            "name": "marktopper/doctrine-dbal-timestamp-type",
-            "version": "v1.0.2",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/marktopper/doctrine-dbal-timestamp-type.git",
-                "reference": "e028dda876204e271d0fc921f013544d58770638"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/marktopper/doctrine-dbal-timestamp-type/zipball/e028dda876204e271d0fc921f013544d58770638",
-                "reference": "e028dda876204e271d0fc921f013544d58770638",
-                "shasum": ""
-            },
-            "require": {
-                "doctrine/dbal": "^2.5",
-                "php": ">=5.6.4"
-            },
-            "type": "package",
-            "autoload": {
-                "psr-4": {
-                    "MarkTopper\\DoctrineDBALTimestampType\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "description": "Add the timestamp type for Doctrine/DBAL",
-            "keywords": [
-                "database",
-                "dbal",
-                "doctrine",
-                "laravel",
-                "mysql",
-                "timestamp"
-            ],
-            "time": "2018-11-11T09:54:26+00:00"
-        },
-        {
             "name": "mockery/mockery",
             "version": "1.2.0",
             "source": {
@@ -5756,5 +5739,6 @@
     "platform": {
         "php": "^7.1.3"
     },
-    "platform-dev": []
+    "platform-dev": [],
+    "plugin-api-version": "2.0.0"
 }
